@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Expense Dashboard Template -->
+    <t t-name="ExpenseDashboard">
+        <div class="expense-dashboard">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header mb-4">
+                <h1>💰 <t t-esc="'Expense Tracker Dashboard'"/></h1>
+                <p class="text-muted">Monitor your expenses and budgets in real-time</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="o_dashboard_stats">
+                <div class="o_dashboard_stat" data-stat-type="total_expenses">
+                    <span class="value" data-stat-type="total_expenses">
+                        <t t-esc="widget._formatCurrency(widget.data.stats.total_expenses || 0)"/>
+                    </span>
+                    <span class="label">Total Expenses</span>
+                </div>
+                <div class="o_dashboard_stat" data-stat-type="monthly_expenses">
+                    <span class="value" data-stat-type="monthly_expenses">
+                        <t t-esc="widget._formatCurrency(widget.data.stats.monthly_expenses || 0)"/>
+                    </span>
+                    <span class="label">This Month</span>
+                </div>
+                <div class="o_dashboard_stat" data-stat-type="pending_approval">
+                    <span class="value" data-stat-type="pending_approval">
+                        <t t-esc="widget.data.stats.pending_approval || 0"/>
+                    </span>
+                    <span class="label">Pending Approval</span>
+                </div>
+                <div class="o_dashboard_stat" data-stat-type="budget_utilization">
+                    <span class="value" data-stat-type="budget_utilization">
+                        <t t-esc="widget.data.stats.budget_utilization ? widget.data.stats.budget_utilization.toFixed(1) + '%' : '0%'"/>
+                    </span>
+                    <span class="label">Budget Used</span>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="quick-action-buttons">
+                <div class="quick-action-button" data-action="add_expense">
+                    <span class="icon">➕</span>
+                    <span class="text">Add Expense</span>
+                </div>
+                <div class="quick-action-button" data-action="create_budget">
+                    <span class="icon">💰</span>
+                    <span class="text">Create Budget</span>
+                </div>
+                <div class="quick-action-button" data-action="view_reports">
+                    <span class="icon">📊</span>
+                    <span class="text">View Reports</span>
+                </div>
+                <div class="quick-action-button" data-action="import_expenses">
+                    <span class="icon">📥</span>
+                    <span class="text">Import Expenses</span>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Left Column: Charts -->
+                <div class="col-lg-8">
+                    <!-- Charts Row -->
+                    <div class="row">
+                        <!-- Expenses by Category Chart -->
+                        <div class="col-md-6">
+                            <div class="expense-chart-container">
+                                <div class="expense-chart-title">Expenses by Category</div>
+                                <div class="chart-wrapper">
+                                    <canvas id="categoryChart" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Monthly Trend Chart -->
+                        <div class="col-md-6">
+                            <div class="expense-chart-container">
+                                <div class="expense-chart-title">Monthly Expense Trend</div>
+                                <div class="chart-wrapper">
+                                    <canvas id="trendChart" height="300"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget Utilization Chart -->
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <div class="expense-chart-container">
+                                <div class="expense-chart-title">Budget Utilization</div>
+                                <div class="chart-wrapper">
+                                    <canvas id="budgetUtilizationChart" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Budget Status & Recent Activity -->
+                <div class="col-lg-4">
+                    <!-- Budget Status Cards -->
+                    <div class="budget-status-section">
+                        <h4 class="section-title">Budget Status</h4>
+                        <div class="budget-status-cards">
+                            <t t-foreach="widget.data.budgets" t-as="budget">
+                                <div class="budget-status-card"
+                                     t-attf-class="budget-status-card {{ budget.utilization_percentage >= 95 ? 'over-budget' : budget.utilization_percentage >= 80 ? 'near-limit' : 'within-budget' }}"
+                                     t-att-data-budget-id="budget.id">
+                                    <div class="budget-card-header">
+                                        <h5 class="budget-card-title" t-esc="budget.name"/>
+                                        <span class="budget-card-amount" t-esc="widget._formatCurrency(budget.amount)"/>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-background">
+                                            <div t-attf-class="progress-bar-fill {{ budget.utilization_percentage >= 95 ? 'critical' : budget.utilization_percentage >= 80 ? 'warning' : 'normal' }}"
+                                                 t-attf-style="width: {{ Math.min(budget.utilization_percentage, 100) }}%;">
+                                                <div class="progress-bar-text" t-esc="budget.utilization_percentage.toFixed(1) + '%'"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="budget-card-details">
+                                        <div class="budget-detail-item">
+                                            <div class="detail-label">Spent</div>
+                                            <div class="detail-value" t-esc="widget._formatCurrency(budget.spent_amount)"/>
+                                        </div>
+                                        <div class="budget-detail-item">
+                                            <div class="detail-label">Remaining</div>
+                                            <div class="detail-value" t-esc="widget._formatCurrency(budget.remaining_amount)"/>
+                                        </div>
+                                    </div>
+                                    <div class="budget-card-footer">
+                                        <span t-attf-class="alert-badge {{ budget.utilization_percentage >= 95 ? 'critical' : budget.utilization_percentage >= 80 ? 'warning' : 'success' }}">
+                                            <t t-esc="budget.utilization_percentage >= 95 ? 'Over Budget' : budget.utilization_percentage >= 80 ? 'Near Limit' : 'Within Budget'"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="recent-activity-section mt-4">
+                        <h4 class="section-title">Recent Activity</h4>
+                        <div class="recent-activity-list">
+                            <t t-foreach="widget.data.recent_activities" t-as="activity">
+                                <div class="activity-item" t-att-data-expense-id="activity.id">
+                                    <div t-attf-class="activity-icon {{ activity.type }}">
+                                        <t t-esc="activity.type === 'expense' ? '💰' : activity.type === 'budget' ? '📊' : '⚠️'"/>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title" t-esc="activity.title"/>
+                                        <div class="activity-description" t-esc="activity.description"/>
+                                        <div class="activity-meta">
+                                            <small class="text-muted" t-esc="activity.date"/>
+                                            <t t-if="activity.user">• <span t-esc="activity.user"/></t>
+                                        </div>
+                                    </div>
+                                    <t t-if="activity.amount">
+                                        <div class="activity-amount" t-esc="widget._formatCurrency(activity.amount)"/>
+                                    </t>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div class="row mt-4" t-if="widget.data.alerts &amp;&amp; widget.data.alerts.length">
+                <div class="col-12">
+                    <div class="alert alert-warning">
+                        <h5>⚠️ Important Alerts</h5>
+                        <t t-foreach="widget.data.alerts" t-as="alert">
+                            <div class="alert-item">
+                                <strong t-esc="alert.title"/>: <span t-esc="alert.message"/>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Base Chart Template -->
+    <t t-name="BaseChart">
+        <div class="chart-container">
+            <canvas t-att-id="widget.chartId"></canvas>
+        </div>
+    </t>
+
+    <!-- Pie Chart Template -->
+    <t t-name="PieChart">
+        <div class="pie-chart-container">
+            <canvas t-att-id="widget.chartId"></canvas>
+        </div>
+    </t>
+
+    <!-- Bar Chart Template -->
+    <t t-name="BarChart">
+        <div class="bar-chart-container">
+            <canvas t-att-id="widget.chartId"></canvas>
+        </div>
+    </t>
+
+    <!-- Line Chart Template -->
+    <t t-name="LineChart">
+        <div class="line-chart-container">
+            <canvas t-att-id="widget.chartId"></canvas>
+        </div>
+    </t>
+
+    <!-- Budget Progress Widget Template -->
+    <t t-name="BudgetProgressWidget">
+        <div class="budget-progress-widget">
+            <div class="budget-progress-header">
+                <span class="budget-progress-title">Budget Utilization</span>
+                <span class="budget-progress-percentage" t-esc="widget.utilization.toFixed(1) + '%'"/>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-background">
+                    <div t-attf-class="progress-bar-fill {{ widget.utilization >= 95 ? 'critical' : widget.utilization >= 80 ? 'warning' : 'normal' }}"
+                         t-attf-style="width: {{ Math.min(widget.utilization, 100) }}%;">
+                        <div class="progress-bar-text" t-esc="widget.utilization.toFixed(1) + '%'"/>
+                    </div>
+                </div>
+            </div>
+            <div class="budget-progress-details">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="detail-label">Budget</div>
+                        <div class="detail-value" t-esc="widget._formatCurrency(widget.budgetAmount)"/>
+                    </div>
+                    <div class="col-4">
+                        <div class="detail-label">Spent</div>
+                        <div class="detail-value" t-esc="widget._formatCurrency(widget.spentAmount)"/>
+                    </div>
+                    <div class="col-4">
+                        <div class="detail-label">Remaining</div>
+                        <div class="detail-value" t-attf-class="{{ widget.budgetAmount - widget.spentAmount < 0 ? 'text-danger' : '' }}">
+                            <t t-esc="widget._formatCurrency(widget.budgetAmount - widget.spentAmount)"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Loading Spinner Template -->
+    <t t-name="LoadingSpinner">
+        <div class="loading-spinner">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading dashboard data...</p>
+        </div>
+    </t>
+
+    <!-- Empty State Template -->
+    <t t-name="EmptyState">
+        <div class="empty-state text-center py-5">
+            <div class="empty-state-icon mb-3">
+                <t t-if="widget.icon" t-esc="widget.icon"/>
+                <t t-if="!widget.icon">📊</t>
+            </div>
+            <h4 t-esc="widget.title || 'No Data Available'"/>
+            <p class="text-muted" t-esc="widget.message || 'There is no data to display at the moment.'"/>
+            <t t-if="widget.action">
+                <button t-attf-class="btn btn-primary {{ widget.action_class || '' }}"
+                        t-att-data-action="widget.action">
+                    <t t-esc="widget.action_text || 'Get Started'"/>
+                </button>
+            </t>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_expense_dashboard" model="ir.ui.view">
+        <field name="name">expense.tracker.dashboard</field>
+        <field name="model">expense.tracker.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Expense Dashboard">
+                <sheet>
+                    <div class="o_expense_dashboard">
+                        <div class="row">
+                            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Total Expenses</h5>
+                                        <h2 class="card-text">
+                                            <field name="total_expenses" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">This Month</h5>
+                                        <h2 class="card-text">
+                                            <field name="monthly_expenses" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Pending Approval</h5>
+                                        <h2 class="card-text">
+                                            <field name="pending_approval"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-3 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Budget Utilization</h5>
+                                        <h2 class="card-text">
+                                            <field name="budget_utilization" string="Budget Utilization %"/>
+                                        </h2>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- <div class="col-12 col-md-6 col-lg-3 mb-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Remaining Budget</h5>
+                                    <h2 class="card-text">
+                                        <field name="remaining_budget" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Expenses by Category</h5>
+                                        <div id="categoryChartContainer">
+                                            <canvas id="categoryChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Monthly Trend</h5>
+                                        <div id="trendChartContainer">
+                                            <canvas id="trendChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_expense_dashboard" model="ir.actions.act_window">
+        <field name="name">Expense Dashboard</field>
+        <field name="res_model">expense.tracker.dashboard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_expense_dashboard"/>
+        <field name="target">current</field>
+        <field name="context">{'dashboard': True}</field>
+    </record>
+
+    <menuitem id="menu_expense_root" name="Expense Tracker" sequence="1"/>
+
+    <menuitem id="menu_expense_dashboard" name="Dashboard" parent="menu_expense_root"
+              action="action_expense_dashboard" sequence="5"/>
+</odoo>

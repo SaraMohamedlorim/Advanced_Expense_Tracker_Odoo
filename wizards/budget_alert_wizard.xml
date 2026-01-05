@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ====== Wizard Form View ====== -->
+    <record id="view_budget_alert_wizard_form" model="ir.ui.view">
+        <field name="name">budget.alert.wizard.form</field>
+        <field name="model">budget.alert.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Budget Alert Wizard" version="7.0">
+                <sheet>
+                    <group>
+                        <field name="budget_id"/>
+                        <field name="alert_type"/>
+                    </group>
+
+                    <group>
+                        <field name="threshold_percentage"/>
+                        <field name="custom_message" nolabel="0" colspan="2"/>
+                    </group>
+
+                    <group>
+                        <field name="notify_users" widget="many2many_tags"/>
+                        <field name="notify_via_email"/>
+                        <field name="notify_via_chat"/>
+                    </group>
+
+                    <group>
+                        <field name="message" nolabel="0" colspan="4" widget="textarea"/>
+                    </group>
+
+                    <group>
+                        <field name="schedule_type"/>
+                        <field name="scheduled_date"/>
+                    </group>
+
+                    <group>
+                        <field name="is_recurring"/>
+                        <field name="recurrence_interval"/>
+                        <field name="recurrence_unit"/>
+                    </group>
+
+                    <group>
+                        <field name="alert_sent" readonly="1"/>
+                        <field name="sent_date" readonly="1"/>
+                    </group>
+
+                    <footer>
+                        <!-- Buttons that call python methods -->
+                        <button name="action_test_alert" string="Send Test" type="object" class="btn-primary"/>
+                        <button name="action_send_alert" string="Send Alert" type="object" class="btn-success"/>
+                        <button name="action_view_budget" string="View Budget" type="object" class="btn-default"/>
+                        <button string="Close" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ====== Action to open the Wizard ====== -->
+    <record id="action_budget_alert_wizard" model="ir.actions.act_window">
+        <field name="name">Create Budget Alert</field>
+        <field name="res_model">budget.alert.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_budget_alert_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+
+    <!-- ====== Optional Menu Item (adjust parent id if needed) ======
+         If you already have a parent menu in your module, replace
+         'expense_tracker_advanced.menu_expense_root' with the correct external id.
+          you can comment out / remove this menu definition. -->
+    <menuitem id="menu_budget_alert_wizard"
+              name="Budget Alerts"
+              parent="menu_expense_root"
+              action="action_budget_alert_wizard"
+              sequence="20"/>
+
+    <!-- ====== Email Template used by the wizard (expense_tracker_advanced.email_template_budget_alert) ====== -->
+    <record id="email_template_budget_alert_wizard" model="mail.template">
+        <field name="name">Budget Alert Email</field>
+        <field name="email_from">${(user.email or '')|safe}</field>
+        <field name="subject">${(custom_subject or 'Budget Alert')}</field>
+        <field name="model_id" ref="expense_tracker_advanced.model_budget_alert_wizard"/>
+        <!-- use auto_delete so transient template doesn't linger (optional) -->
+        <field name="auto_delete" eval="True"/>
+        <field name="body_html"><![CDATA[
+            <div>
+                <p><strong>${(custom_subject or 'Budget Alert')}</strong></p>
+                <div>
+                    ${(custom_body or '')}
+                </div>
+                <br/>
+                <p>Budget: ${object.budget_id.name if object and object.budget_id else ''}</p>
+                <p>Current Utilization: ${object.budget_id.utilization_percentage if object and object.budget_id else ''} %</p>
+            </div>
+        ]]></field>
+    </record>
+</odoo>

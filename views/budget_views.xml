@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Budget Tree View -->
+    <record id="view_budget_tree" model="ir.ui.view">
+        <field name="name">expense.budget.tree</field>
+        <field name="model">expense.budget</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="utilization_percentage &lt;= warning_threshold"
+                  decoration-warning="utilization_percentage &gt; warning_threshold and utilization_percentage &lt;= critical_threshold"
+                  decoration-danger="utilization_percentage &gt; critical_threshold">
+                <field name="name"/>
+                <field name="category_id"/>
+                <field name="amount" sum="Total Budget"/>
+                <field name="spent_amount"/>
+                <field name="remaining_amount"/>
+                <field name="utilization_percentage"/>
+                <field name="period_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="state" widget="badge"/>
+
+                 <field name="warning_threshold" invisible="1"/>
+                 <field name="critical_threshold" invisible="1"/>
+            </tree>
+        </field> 
+    </record>
+
+    <!-- Budget Form View -->
+    <record id="view_budget_form" model="ir.ui.view">
+        <field name="name">expense.budget.form</field>
+        <field name="model">expense.budget</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_activate" string="Activate" type="object"
+                            class="btn-primary" states="draft"/>
+                    <button name="action_close" string="Close" type="object"
+                            class="btn-secondary" states="active"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="category_id"/>
+                            <field name="amount"/>
+                            <field name="period_type"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="state"/>
+                            <field name="warning_threshold"/>
+                            <field name="critical_threshold"/>
+                        </group>
+                    </group>
+
+                    <group string="Budget Progress">
+                        <div class="progress-bar-container" style="margin: 10px 0;">
+                            <div class="progress-bar-background" style="background-color: #e0e0e0; height: 20px; border-radius: 10px; position: relative;">
+                                <div t-attf-class="progress-bar-fill {{ utilization_percentage &gt; critical_threshold ? 'critical' : utilization_percentage &gt; warning_threshold ? 'warning' : 'normal' }}"
+                                     t-attf-style="width: {{ utilization_percentage }}%; height: 100%; border-radius: 10px; transition: width 0.3s ease;">
+                                </div>
+                                <div style="position: absolute; top: 0; left: 0; right: 0; text-align: center; line-height: 20px; font-size: 12px; font-weight: bold;">
+                                    <field name="utilization_percentage" readonly="1"/>%
+                                </div>
+                            </div>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="spent_amount" readonly="1"/>
+                                <field name="remaining_amount" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="expense_count" readonly="1" widget="statinfo"
+                                       string="Expenses" onclick="action_view_expenses"/>
+                            </group>
+                        </group>
+                    </group>
+
+                    <group string="Related Expenses">
+                        <field name="expense_ids" context="{'default_budget_id': id}">
+                            <tree>
+                                <field name="name"/>
+                                <field name="title"/>
+                                <field name="amount"/>
+                                <field name="state"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Budget Search View -->
+    <record id="view_budget_search" model="ir.ui.view">
+        <field name="name">expense.budget.search</field>
+        <field name="model">expense.budget</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="category_id"/>
+                <filter string="Active" name="active" domain="[('state', '=', 'active')]"/>
+                <filter string="Over Budget" name="over_budget"
+                        domain="[('utilization_percentage', '&gt;', 100)]"/>
+                <filter string="Current Period" name="current"
+                        domain="[('date_from', '&lt;=', context_today()), ('date_to', '&gt;=', context_today())]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_active_budgets" model="ir.actions.act_window">
+    <field name="name">Active Budgets</field>
+    <field name="res_model">expense.budget</field>
+    <field name="view_mode">tree,form</field>
+    <field name="domain">[('state', '=', 'active')]</field>
+</record>
+
+
+     <record id="action_expense_budget" model="ir.actions.act_window">
+        <field name="name">Budgets</field>
+        <field name="res_model">expense.budget</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_budget_report" model="ir.actions.act_window">
+    <field name="name">Budget Analysis</field>
+    <field name="res_model">expense.budget</field>
+    <field name="view_mode">tree,form</field>
+</record>
+
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu Structure -->
+    <menuitem id="menu_expense_root" name="Expense Tracker" sequence="10"/>
+
+    <!-- Dashboard -->
+    <menuitem id="menu_expense_dashboard" name="Dashboard" parent="menu_expense_root"
+              action="action_expense_dashboard" sequence="10"/>
+
+    <!-- Expenses -->
+    <menuitem id="menu_expense_management" name="Expenses" parent="menu_expense_root" sequence="20"/>
+    <menuitem id="menu_expense_list" name="All Expenses" parent="menu_expense_management"
+              action="action_expense_tracker" sequence="10"/>
+    <menuitem id="menu_expense_my" name="My Expenses" parent="menu_expense_management"
+              action="action_my_expenses" sequence="20"/>
+    <menuitem id="menu_expense_approval" name="Approval Queue" parent="menu_expense_management"
+              action="action_approval_queue" sequence="30"/>
+
+    <!-- Budgets -->
+    <menuitem id="menu_budget_management" name="Budgets" parent="menu_expense_root" sequence="30"/>
+    <menuitem id="menu_budget_list" name="All Budgets" parent="menu_budget_management"
+              action="action_expense_budget" sequence="10"/>
+    <menuitem id="menu_budget_active" name="Active Budgets" parent="menu_budget_management"
+              action="action_active_budgets" sequence="20"/>
+
+    <!-- Categories -->
+    <menuitem id="menu_category_management" name="Categories" parent="menu_expense_root"
+              action="action_expense_category" sequence="40"/>
+
+    <!-- Reports -->
+    <menuitem id="menu_expense_reports" name="Reports" parent="menu_expense_root" sequence="50"/>
+    <menuitem id="menu_expense_analysis" name="Expense Analysis" parent="menu_expense_reports"
+              action="action_expense_report" sequence="10"/>
+    <menuitem id="menu_budget_analysis" name="Budget Analysis" parent="menu_expense_reports"
+              action="action_budget_report" sequence="20"/>
+
+    <!-- Configuration -->
+    <menuitem id="menu_expense_config" name="Configuration" parent="menu_expense_root" sequence="60"/>
+</odoo>

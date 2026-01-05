@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_expense_tracker" model="ir.sequence">
+            <field name="name">Expense Reference</field>
+            <field name="code">expense.tracker</field>
+            <field name="prefix">EXP/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_expense_budget" model="ir.sequence">
+            <field name="name">Budget Reference</field>
+            <field name="code">expense.budget</field>
+            <field name="prefix">BUD/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

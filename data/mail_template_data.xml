@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="email_template_budget_alert" model="mail.template">
+            <field name="name">Budget Alert</field>
+            <field name="model_id" ref="model_expense_budget"/>
+            <field name="subject">Budget Alert: {{ object.name }}</field>
+            <field name="email_from">${(object.user_id.email_formatted or 'noreply@example.com')|safe}</field>
+            <field name="email_to">${(object.user_id.email or '')|safe}</field>
+            <field name="body_html">
+                <![CDATA[
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #714B67;">Budget Alert</h2>
+
+                    <p>Dear <strong>${object.user_id.name or 'Team'}</strong>,</p>
+
+                    <p>This is to inform you that the budget <strong>${object.name}</strong>
+                    has reached <strong>${'%.1f' % object.utilization_percentage}%</strong> utilization.</p>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0; border-left: 4px solid #714B67;">
+                        <h3 style="margin-top: 0;">Budget Details:</h3>
+                        <table style="width: 100%;">
+                            <tr>
+                                <td><strong>Budget Amount:</strong></td>
+                                <td>${object.amount} ${object.currency_id.symbol}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Spent Amount:</strong></td>
+                                <td>${object.spent_amount} ${object.currency_id.symbol}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Remaining:</strong></td>
+                                <td>${object.remaining_amount} ${object.currency_id.symbol}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Period:</strong></td>
+                                <td>${object.date_from} to ${object.date_to}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <p>Please review your expenses and take appropriate action if necessary.</p>
+
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <p style="color: #666; font-size: 12px;">
+                            Best regards,<br/>
+                            <strong>Expense Tracker System</strong><br/>
+                            ${object.company_id.name}
+                        </p>
+                    </div>
+                </div>
+                ]]>
+            </field>
+        </record>
+         <record id="email_template_expense_approved" model="mail.template">
+            <field name="name">Expense Approved</field>
+            <field name="model_id" ref="model_expense_tracker"/>
+            <field name="subject">Your Expense Has Been Approved</field>
+            <field name="email_from">${(object.user_id.email or '')|safe}</field>
+            <field name="email_to">${(object.employee_id.work_email or '')|safe}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html"><![CDATA[
+                <div>
+                    <h2>Expense Approved</h2>
+                    <p>Dear ${object.user_id.name},</p>
+                    <p>Your expense <strong>${object.title}</strong> has been approved.</p>
+
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                        <p><strong>Amount:</strong> ${object.amount}</p>
+                        <p><strong>Category:</strong> ${object.category_id.name}</p>
+                        <p><strong>Date:</strong> ${object.date}</p>
+                    </div>
+
+                    <p>Thank you for submitting your expense.</p>
+                </div>
+            ]]>
+        </field>
+        </record>
+    </data>
+</odoo>

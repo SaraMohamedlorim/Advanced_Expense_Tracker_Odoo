@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Budget Form Progress Widget -->
+    <t t-name="BudgetFormProgress">
+        <div class="budget-progress-widget">
+            <div class="budget-progress-header">
+                <h4 class="budget-progress-title">Budget Progress</h4>
+                <span t-attf-class="budget-progress-percentage {{ widget.utilization >= 95 ? 'text-danger' : widget.utilization >= 80 ? 'text-warning' : 'text-success' }}">
+                    <t t-esc="widget.utilization.toFixed(1) + '%'"/>
+                </span>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-background">
+                    <div t-attf-class="progress-bar-fill {{ widget.utilization >= 95 ? 'critical' : widget.utilization >= 80 ? 'warning' : 'normal' }}"
+                         t-attf-style="width: {{ Math.min(widget.utilization, 100) }}%;">
+                        <div class="progress-bar-text" t-esc="widget.utilization.toFixed(1) + '%'"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="budget-stats-grid">
+                <div class="budget-stat">
+                    <div class="stat-label">Budget Amount</div>
+                    <div class="stat-value" t-esc="widget._formatCurrency(widget.budgetAmount)"/>
+                </div>
+                <div class="budget-stat">
+                    <div class="stat-label">Spent Amount</div>
+                    <div class="stat-value" t-esc="widget._formatCurrency(widget.spentAmount)"/>
+                </div>
+                <div class="budget-stat">
+                    <div class="stat-label">Remaining</div>
+                    <div class="stat-value"
+                         t-attf-class="{{ widget.remainingAmount < 0 ? 'text-danger' : '' }}">
+                        <t t-esc="widget._formatCurrency(widget.remainingAmount)"/>
+                    </div>
+                </div>
+                <div class="budget-stat">
+                    <div class="stat-label">Expense Count</div>
+                    <div class="stat-value" t-esc="widget.expenseCount"/>
+                </div>
+            </div>
+
+            <!-- Alert Thresholds -->
+            <div class="alert-thresholds mt-3">
+                <div class="threshold-item">
+                    <span class="threshold-label">Warning Threshold:</span>
+                    <span class="threshold-value" t-esc="widget.warningThreshold + '%'"/>
+                </div>
+                <div class="threshold-item">
+                    <span class="threshold-label">Critical Threshold:</span>
+                    <span class="threshold-value" t-esc="widget.criticalThreshold + '%'"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Budget List Item -->
+    <t t-name="BudgetListItem">
+        <div class="budget-list-item" t-att-data-budget-id="widget.budget.id">
+            <div class="budget-main-info">
+                <div class="budget-name" t-esc="widget.budget.name"/>
+                <div class="budget-meta">
+                    <span class="category-badge">
+                        <span t-attf-class="category-color-dot"
+                              t-att-style="'background-color: ' + widget.budget.category_color + ';'"></span>
+                        <span t-esc="widget.budget.category_id[1]"/>
+                    </span>
+                    <span class="budget-period">
+                        <t t-esc="widget.formatDate(widget.budget.date_from)"/> -
+                        <t t-esc="widget.formatDate(widget.budget.date_to)"/>
+                    </span>
+                    <span t-attf-class="status-badge status-badge-{{ widget.budget.state }}">
+                        <t t-esc="widget.budget.state.charAt(0).toUpperCase() + widget.budget.state.slice(1)"/>
+                    </span>
+                </div>
+            </div>
+
+            <div class="budget-progress-info">
+                <div class="utilization-bar">
+                    <div t-attf-class="utilization-fill {{ widget.budget.utilization_percentage >= 95 ? 'critical' : widget.budget.utilization_percentage >= 80 ? 'warning' : 'safe' }}"
+                         t-attf-style="width: {{ Math.min(widget.budget.utilization_percentage, 100) }}%;">
+                    </div>
+                </div>
+                <div class="utilization-text">
+                    <t t-esc="widget.budget.utilization_percentage.toFixed(1) + '%'"/> Utilization
+                </div>
+            </div>
+
+            <div class="budget-amount-info">
+                <div class="amount-cell" t-esc="widget._formatCurrency(widget.budget.amount)"/>
+                <div class="amount-details">
+                    <small>Spent: <t t-esc="widget._formatCurrency(widget.budget.spent_amount)"/></small><br/>
+                    <small>Remaining: <t t-esc="widget._formatCurrency(widget.budget.remaining_amount)"/></small>
+                </div>
+            </div>
+
+            <div class="budget-actions">
+                <button class="tree-action-btn view" title="View Budget">
+                    <i class="fa fa-eye"></i>
+                </button>
+                <button class="tree-action-btn expenses" title="View Expenses">
+                    <i class="fa fa-list"></i>
+                </button>
+                <button class="tree-action-btn alert" title="Set Alert">
+                    <i class="fa fa-bell"></i>
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Budget Alert Configuration -->
+    <t t-name="BudgetAlertConfiguration">
+        <div class="alert-configuration">
+            <h5>Alert Settings</h5>
+
+            <div class="alert-thresholds-config">
+                <div class="form-group">
+                    <label>Warning Threshold (%)</label>
+                    <input type="number"
+                           class="form-control"
+                           min="0"
+                           max="100"
+                           step="1"
+                           t-att-value="widget.warningThreshold"/>
+                    <small class="form-text text-muted">
+                        Receive warning when budget utilization reaches this percentage
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>Critical Threshold (%)</label>
+                    <input type="number"
+                           class="form-control"
+                           min="0"
+                           max="100"
+                           step="1"
+                           t-att-value="widget.criticalThreshold"/>
+                    <small class="form-text text-muted">
+                        Receive critical alert when budget utilization reaches this percentage
+                    </small>
+                </div>
+            </div>
+
+            <div class="alert-notification-settings">
+                <h6>Notification Methods</h6>
+                <div class="form-check">
+                    <input t-att-checked="widget.emailNotifications ? 'checked' : ''"
+                           type="checkbox"
+                           class="form-check-input"
+                           id="emailAlerts"/>
+                    <label class="form-check-label" for="emailAlerts">
+                        Email Notifications
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input t-att-checked="widget.chatNotifications ? 'checked' : ''"
+                           type="checkbox"
+                           class="form-check-input"
+                           id="chatAlerts"/>
+                    <label class="form-check-label" for="chatAlerts">
+                        Chat Notifications
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input t-att-checked="widget.pushNotifications ? 'checked' : ''"
+                           type="checkbox"
+                           class="form-check-input"
+                           id="pushAlerts"/>
+                    <label class="form-check-label" for="pushAlerts">
+                        Push Notifications
+                    </label>
+                </div>
+            </div>
+
+            <div class="alert-recipients">
+                <h6>Alert Recipients</h6>
+                <div class="recipients-list">
+                    <t t-foreach="widget.recipients" t-as="recipient">
+                        <span class="recipient-tag">
+                            <t t-esc="recipient.name"/>
+                            <button class="btn-remove-recipient"
+                                    t-att-data-user-id="recipient.id">×</button>
+                        </span>
+                    </t>
+                </div>
+                <button class="btn btn-sm btn-outline-primary">Add Recipient</button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Budget Utilization Chart -->
+    <t t-name="BudgetUtilizationChart">
+        <div class="budget-utilization-chart">
+            <div class="chart-header">
+                <h5>Budget Utilization Over Time</h5>
+                <div class="chart-controls">
+                    <select class="form-select form-select-sm">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="budgetUtilizationTimeline" height="200"></canvas>
+            </div>
+        </div>
+    </t>
+
+    <!-- Budget Comparison Chart -->
+    <t t-name="BudgetComparisonChart">
+        <div class="budget-comparison-chart">
+            <div class="chart-header">
+                <h5>Budget vs Actual Spending</h5>
+            </div>
+            <div class="chart-container">
+                <canvas id="budgetComparison" height="250"></canvas>
+            </div>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <span class="legend-color budget-color"></span>
+                    <span class="legend-label">Budgeted</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color actual-color"></span>
+                    <span class="legend-label">Actual</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color variance-color"></span>
+                    <span class="legend-label">Variance</span>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!-- Budget Status Summary -->
+    <t t-name="BudgetStatusSummary">
+        <div class="budget-status-summary">
+            <div class="summary-card total-budget">
+                <div class="summary-icon">💰</div>
+                <div class="summary-content">
+                    <div class="summary-value" t-esc="widget._formatCurrency(widget.totalBudget)"/>
+                    <div class="summary-label">Total Budget</div>
+                </div>
+            </div>
+
+            <div class="summary-card total-spent">
+                <div class="summary-icon">💸</div>
+                <div class="summary-content">
+                    <div class="summary-value" t-esc="widget._formatCurrency(widget.totalSpent)"/>
+                    <div class="summary-label">Total Spent</div>
+                </div>
+            </div>
+
+            <div class="summary-card average-utilization">
+                <div class="summary-icon">📊</div>
+                <div class="summary-content">
+                    <div class="summary-value" t-esc="widget.averageUtilization.toFixed(1) + '%'"/>
+                    <div class="summary-label">Avg Utilization</div>
+                </div>
+            </div>
+
+            <div class="summary-card over-budget-count">
+                <div class="summary-icon">⚠️</div>
+                <div class="summary-content">
+                    <div class="summary-value" t-esc="widget.overBudgetCount"/>
+                    <div class="summary-label">Over Budget</div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Category Tree View -->
+    <record id="view_category_tree" model="ir.ui.view">
+        <field name="name">expense.category.tree</field>
+        <field name="model">expense.category</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="parent_id"/>
+                <field name="has_budget"/>
+                <field name="default_budget_amount"/>
+                <field name="color" widget="color"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Category Form View -->
+    <record id="view_category_form" model="ir.ui.view">
+        <field name="name">expense.category.form</field>
+        <field name="model">expense.category</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="parent_id"/>
+                            <field name="color" widget="color"/>
+                        </group>
+                        <group>
+                            <field name="has_budget"/>
+                            <field name="default_budget_amount" attrs="{'invisible': [('has_budget', '=', False)]}"/>
+                            <field name="account_id"/>
+                        </group>
+                    </group>
+
+                    <group string="Description">
+                        <field name="description"/>
+                    </group>
+
+                    <group string="Subcategories" attrs="{'invisible': [('child_ids', '=', [])]}">
+                        <field name="child_ids">
+                            <tree>
+                                <field name="name"/>
+                                <field name="code"/>
+                                <field name="has_budget"/>
+                                <field name="default_budget_amount"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Category Search View -->
+    <record id="view_category_search" model="ir.ui.view">
+        <field name="name">expense.category.search</field>
+        <field name="model">expense.category</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="parent_id"/>
+                <filter string="Has Budget Control" name="has_budget" domain="[('has_budget', '=', True)]"/>
+                <filter string="Main Categories" name="main_categories" domain="[('parent_id', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+     <record id="action_expense_category" model="ir.actions.act_window">
+        <field name="name">Categories</field>
+        <field name="res_model">expense.category</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

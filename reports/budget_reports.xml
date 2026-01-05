@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Budget Summary Report -->
+        <record id="report_budget_summary" model="ir.actions.report">
+            <field name="name">Budget Summary Report</field>
+            <field name="model">expense.budget</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">expense_tracker_advanced.budget_summary_report</field>
+            <field name="print_report_name">'Budget Summary Report'</field>
+            <field name="binding_model_id" ref="model_expense_budget"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Budget Utilization Report -->
+        <record id="report_budget_utilization" model="ir.actions.report">
+            <field name="name">Budget Utilization Report</field>
+            <field name="model">expense.budget</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">expense_tracker_advanced.budget_utilization_report</field>
+            <field name="print_report_name">'Budget Utilization Report'</field>
+            <field name="binding_model_id" ref="model_expense_budget"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Budget Summary Report Template -->
+        <template id="budget_summary_report">
+            <t t-call="web.html_container">
+                <div class="container">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="header" style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="color: #714B67;">Budget Summary Report</h1>
+                            <p>Generated on: <span t-field="datetime.datetime.now()"/></p>
+                        </div>
+
+                        <!-- Summary Stats -->
+                        <div class="summary-stats" style="display: flex; justify-content: space-around; margin-bottom: 30px;">
+                            <div class="stat" style="text-align: center;">
+                                <h3 style="color: #714B67;" t-esc="data.get('total_budgets', 0)"/>
+                                <p>Total Budgets</p>
+                            </div>
+                            <div class="stat" style="text-align: center;">
+                                <h3 style="color: #28a745;">
+                                    <span t-esc="data.get('total_budget_amount', 0)"/>
+                                </h3>
+                                <p>Total Budget Amount</p>
+                            </div>
+                            <div class="stat" style="text-align: center;">
+                                <h3 style="color: #dc3545;">
+                                    <span t-esc="data.get('total_spent', 0)"/>
+                                </h3>
+                                <p>Total Spent</p>
+                            </div>
+                        </div>
+
+                        <!-- Budget List -->
+                        <div class="budget-list">
+                            <h3>Budget Details</h3>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background-color: #714B67; color: white;">
+                                        <th style="padding: 10px; text-align: left;">Budget Name</th>
+                                        <th style="padding: 10px; text-align: left;">Category</th>
+                                        <th style="padding: 10px; text-align: right;">Budget Amount</th>
+                                        <th style="padding: 10px; text-align: right;">Spent Amount</th>
+                                        <th style="padding: 10px; text-align: center;">Utilization</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="docs" t-as="budget">
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding: 8px;">
+                                                <span t-field="budget.name"/>
+                                            </td>
+                                            <td style="padding: 8px;">
+                                                <span t-field="budget.category_id.name"/>
+                                            </td>
+                                            <td style="padding: 8px; text-align: right;">
+                                                <span t-field="budget.amount"/>
+                                            </td>
+                                            <td style="padding: 8px; text-align: right;">
+                                                <span t-field="budget.spent_amount"/>
+                                            </td>
+                                            <td style="padding: 8px; text-align: center;">
+                                                <span t-field="budget.utilization_percentage"/>
+                                                <span>%</span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="footer" style="margin-top: 50px; text-align: center; color: #666;">
+                            <p>Generated by Expense Tracker System</p>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <!-- Budget Utilization Report Template -->
+        <template id="budget_utilization_report">
+            <t t-call="web.html_container">
+                <div class="container">
+                    <div class="page">
+                        <!-- Header -->
+                        <div class="header" style="text-align: center; margin-bottom: 30px;">
+                            <h1 style="color: #714B67;">Budget Utilization Report</h1>
+                            <p>Period: <span t-esc="data.get('date_from', 'N/A')"/> to <span t-esc="data.get('date_to', 'N/A')"/></p>
+                        </div>
+
+                        <!-- Utilization by Category -->
+                        <div class="utilization-section">
+                            <h3>Utilization by Category</h3>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background-color: #f8f9fa;">
+                                        <th style="padding: 10px; text-align: left;">Category</th>
+                                        <th style="padding: 10px; text-align: right;">Budget Amount</th>
+                                        <th style="padding: 10px; text-align: right;">Spent Amount</th>
+                                        <th style="padding: 10px; text-align: center;">Utilization %</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data.get('category_breakdown', [])" t-as="category">
+                                        <tr style="border-bottom: 1px solid #ddd;">
+                                            <td style="padding: 8px;">
+                                                <span t-esc="category.get('name', 'N/A')"/>
+                                            </td>
+                                            <td style="padding: 8px; text-align: right;">
+                                                <span t-esc="category.get('budget_amount', 0)"/>
+                                            </td>
+                                            <td style="padding: 8px; text-align: right;">
+                                                <span t-esc="category.get('spent_amount', 0)"/>
+                                            </td>
+                                            <td style="padding: 8px; text-align: center;">
+                                                <span t-esc="category.get('utilization', 0)"/>%
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Status Summary -->
+                        <div class="status-summary" style="margin-top: 30px;">
+                            <h3>Budget Status</h3>
+                            <div style="display: flex; justify-content: space-around;">
+                                <div style="text-align: center;">
+                                    <div style="color: #28a745; font-size: 24px; font-weight: bold;">
+                                        <span t-esc="data.get('within_budget_count', 0)"/>
+                                    </div>
+                                    <div>Within Budget</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="color: #ffc107; font-size: 24px; font-weight: bold;">
+                                        <span t-esc="data.get('near_limit_count', 0)"/>
+                                    </div>
+                                    <div>Near Limit</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="color: #dc3545; font-size: 24px; font-weight: bold;">
+                                        <span t-esc="data.get('over_budget_count', 0)"/>
+                                    </div>
+                                    <div>Over Budget</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+
+        <!-- Report Actions -->
+        <record id="action_report_budget_summary" model="ir.actions.report">
+            <field name="name">Budget Summary Report</field>
+            <field name="model">expense.budget</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">expense_tracker_advanced.report_budget_summary</field>
+            <field name="print_report_name">'Budget Summary - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_expense_budget"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_budget_utilization" model="ir.actions.report">
+            <field name="name">Budget Utilization Report</field>
+            <field name="model">expense.budget</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">expense_tracker_advanced.report_budget_utilization</field>
+            <field name="print_report_name">'Budget Utilization - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_expense_budget"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>

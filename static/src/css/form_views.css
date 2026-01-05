@@ -1,0 +1,248 @@
+/* Expense Form View Enhancements */
+.o_form_view .oe_title {
+    border-bottom: 2px solid #714B67;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Budget Progress in Forms */
+.budget-progress-container {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 15px 0;
+    border-left: 4px solid #714B67;
+}
+
+.budget-progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.budget-progress-title {
+    font-weight: 600;
+    color: #344767;
+    margin: 0;
+}
+
+.budget-progress-percentage {
+    font-size: 18px;
+    font-weight: bold;
+    color: #714B67;
+}
+
+/* Receipt Preview */
+.receipt-preview-container {
+    text-align: center;
+    padding: 20px;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.receipt-preview-container:hover {
+    border-color: #714B67;
+    background: #f8f9fa;
+}
+
+.receipt-preview-image {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.receipt-preview-placeholder {
+    font-size: 48px;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+/* Status Badges in Forms */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge-draft {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #bbdefb;
+}
+
+.status-badge-submitted {
+    background: #fff3e0;
+    color: #ef6c00;
+    border: 1px solid #ffe0b2;
+}
+
+.status-badge-approved {
+    background: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+.status-badge-rejected {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+.status-badge-paid {
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border: 1px solid #e1bee7;
+}
+
+/* Amount Field Styling */
+.amount-field {
+    font-size: 18px;
+    font-weight: bold;
+    color: #714B67;
+}
+
+.amount-field .o_input {
+    font-weight: bold;
+    color: #714B67;
+}
+
+/* Category Color Indicator */
+.category-color-indicator {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+/* Attachment Styling */
+.attachment-preview {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    background: #f8f9fa;
+}
+
+.attachment-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.attachment-name {
+    font-weight: 500;
+    color: #344767;
+}
+
+.attachment-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Button Enhancements */
+.btn-expense-primary {
+    background: linear-gradient(135deg, #714B67, #8a5a7c);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-expense-primary:hover {
+    background: linear-gradient(135deg, #5a3a52, #714B67);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(113, 75, 103, 0.3);
+}
+
+/* Field Group Styling */
+.field-group-expense {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #714B67;
+}
+
+.field-group-title {
+    font-weight: 600;
+    color: #344767;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+/* Readonly Field Styling */
+.o_form_view .o_field_widget:readonly {
+    background: #f8f9fa;
+    border-color: #e9ecef;
+    color: #495057;
+}
+
+/* Required Field Indicators */
+.o_form_label.required:after {
+    content: " *";
+    color: #dc3545;
+}
+
+/* Mobile Responsive Forms */
+@media (max-width: 768px) {
+    .budget-progress-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .attachment-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .attachment-actions {
+        align-self: stretch;
+        justify-content: space-between;
+    }
+
+    .field-group-expense {
+        padding: 15px;
+    }
+}
+
+/* Animation for Form Interactions */
+.o_form_view .o_field_widget {
+    transition: all 0.2s ease;
+}
+
+.o_form_view .o_field_widget:focus {
+    border-color: #714B67;
+    box-shadow: 0 0 0 0.2rem rgba(113, 75, 103, 0.25);
+}
+
+/* Custom Checkbox and Radio */
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #714B67;
+    border-color: #714B67;
+}
+
+/* Tooltip Enhancements */
+.tooltip-inner {
+    background: #714B67;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.tooltip.bs-tooltip-top .arrow::before {
+    border-top-color: #714B67;
+}

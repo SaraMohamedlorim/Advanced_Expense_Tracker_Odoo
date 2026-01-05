@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_expense_analysis" name="Expense Analysis Report">
+        <t t-call="web.html_container">
+            <div class="page">
+                <div class="header">
+                    <h1>Expense Analysis Report</h1>
+                    <div class="company-info">
+                        <span t-field="company.name"/>
+                        <span t-field="company.currency_id.name"/>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <h3>Report Filters</h3>
+                    <p>Date Range: <span t-field="data.date_from"/> to <span t-field="data.date_to"/></p>
+                    <p>Categories: <span t-field="data.categories"/></p>
+                    <p>Generated on: <span t-field="datetime.datetime.now()"/></p>
+                </div>
+
+                <div class="summary">
+                    <h3>Summary</h3>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Total Expenses</th>
+                            <th>Average Expense</th>
+                            <th>Largest Expense</th>
+                            <th>Number of Expenses</th>
+                        </tr>
+                        <tr>
+                            <td t-field="data.total_amount"/>
+                            <td t-field="data.average_amount"/>
+                            <td t-field="data.max_amount"/>
+                            <td t-field="data.expense_count"/>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="category-breakdown">
+                    <h3>Expenses by Category</h3>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Percentage</th>
+                            <th>Count</th>
+                        </tr>
+                        <t t-foreach="data.category_breakdown" t-as="category">
+                            <tr>
+                                <td t-field="category.name"/>
+                                <td t-field="category.amount"/>
+                                <td t-field="category.percentage"/>%
+                                <td t-field="category.count"/>
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+
+                <div class="monthly-trend">
+                    <h3>Monthly Trend</h3>
+                    <table class="table table-striped">
+                        <tr>
+                            <th>Month</th>
+                            <th>Amount</th>
+                            <th>Change</th>
+                        </tr>
+                        <t t-foreach="data.monthly_trend" t-as="month">
+                            <tr>
+                                <td t-field="month.name"/>
+                                <td t-field="month.amount"/>
+                                <td t-field="month.change"/>%
+                            </tr>
+                        </t>
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Email Templates -->
+    <template id="email_template_budget_alert" name="Budget Alert">
+        <div>
+            <h2>Budget Alert</h2>
+            <p>Dear <t t-esc="object.user_id.name"/>,</p>
+            <p>This is to inform you that the budget <strong t-field="object.name"/> has reached <strong t-field="object.utilization_percentage"/>% utilization.</p>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                <h3>Budget Details:</h3>
+                <p><strong>Budget Amount:</strong> <t t-field="object.amount"/></p>
+                <p><strong>Spent Amount:</strong> <t t-field="object.spent_amount"/></p>
+                <p><strong>Remaining:</strong> <t t-field="object.remaining_amount"/></p>
+                <p><strong>Period:</strong> <t t-field="object.date_from"/> to <t t-field="object.date_to"/></p>
+            </div>
+
+            <p>Please review your expenses and take appropriate action.</p>
+            <p>Best regards,<br/>Expense Tracker System</p>
+        </div>
+    </template>
+
+    <template id="email_template_expense_approved" name="Expense Approved">
+        <div>
+            <h2>Expense Approved</h2>
+            <p>Dear <t t-esc="object.user_id.name"/>,</p>
+            <p>Your expense <strong t-field="object.title"/> has been approved.</p>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
+                <p><strong>Amount:</strong> <t t-field="object.amount"/></p>
+                <p><strong>Category:</strong> <t t-field="object.category_id.name"/></p>
+                <p><strong>Date:</strong> <t t-field="object.date"/></p>
+            </div>
+
+            <p>Thank you for submitting your expense.</p>
+        </div>
+    </template>
+</odoo>

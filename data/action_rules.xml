@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_expense_submit_bulk" model="ir.actions.server">
+        <field name="name">Submit Selected Expenses</field>
+        <field name="model_id" ref="model_expense_tracker"/>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[ 
+for record in records:
+    if record.state == 'draft':
+        record.action_submit()
+]]>
+    </field>
+    </record>
+   <record id="action_budget_alert_auto" model="base.automation">
+        <field name="name">Auto Budget Alert on High Utilization</field>
+        <field name="model_id" ref="model_expense_budget"/>
+        <field name="trigger">on_write</field>
+        <field name="state">code</field>
+        <field name="code"><![CDATA[
+if record.utilization_percentage >= record.critical_threshold and record.state == 'active':
+    alert_wizard = env['budget.alert.wizard'].create({
+        'budget_id': record.id,
+        'alert_type': 'critical',
+        'threshold_percentage': record.critical_threshold,
+        'notify_users': [(6, 0, env.ref('expense_tracker_advanced.group_expense_manager').users.ids)],
+    })
+    alert_wizard.action_send_alert()
+elif record.utilization_percentage >= record.warning_threshold and record.state == 'active':
+    alert_wizard = env['budget.alert.wizard'].create({
+        'budget_id': record.id,
+        'alert_type': 'warning',
+        'threshold_percentage': record.warning_threshold,
+        'notify_users': [(6, 0, env.ref('expense_tracker_advanced.group_expense_manager').users.ids)],
+    })
+    alert_wizard.action_send_alert()
+        ]]>
+        </field>
+    </record>
+</odoo>

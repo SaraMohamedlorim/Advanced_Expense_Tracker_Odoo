@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- Expense Form Custom Header -->
+    <t t-name="ExpenseFormHeader">
+        <div class="expense-form-header">
+            <div class="header-actions">
+                <button t-if="widget.state === 'draft'"
+                        class="btn btn-primary"
+                        data-action="action_submit">
+                    Submit for Approval
+                </button>
+                <button t-if="widget.state === 'submitted'"
+                        class="btn btn-success"
+                        data-action="action_approve">
+                    Approve Expense
+                </button>
+                <button t-if="widget.state === 'submitted'"
+                        class="btn btn-warning"
+                        data-action="action_reject">
+                    Reject
+                </button>
+                <button t-if="widget.state === 'approved'"
+                        class="btn btn-info"
+                        data-action="action_mark_paid">
+                    Mark as Paid
+                </button>
+                <button t-if="widget.state !== 'draft'"
+                        class="btn btn-secondary"
+                        data-action="action_reset_to_draft">
+                    Reset to Draft
+                </button>
+            </div>
+
+            <div class="status-indicator">
+                <span t-attf-class="status-badge status-badge-{{ widget.state }}">
+                    <t t-esc="widget.state.charAt(0).toUpperCase() + widget.state.slice(1)"/>
+                </span>
+            </div>
+        </div>
+    </t>
+
+    <!-- Expense Receipt Upload Area -->
+    <t t-name="ExpenseReceiptUpload">
+        <div class="receipt-upload-section">
+            <label class="form-label">Receipt Attachment</label>
+            <div class="receipt-upload-area">
+                <input type="file"
+                       accept=".jpg,.jpeg,.png,.pdf,.gif"
+                       style="display: none;"/>
+                <div class="upload-content">
+                    <div class="upload-icon">📎</div>
+                    <div class="upload-text">
+                        <t t-if="!widget.hasReceipt">Click to upload receipt or drag and drop</t>
+                        <t t-if="widget.hasReceipt">
+                            <span t-esc="widget.receiptFilename"/>
+                        </t>
+                    </div>
+                    <div class="upload-hint">
+                        JPG, PNG, PDF, GIF (Max: 10MB)
+                    </div>
+                </div>
+            </div>
+
+            <t t-if="widget.hasReceipt">
+                <div class="receipt-preview-container mt-3">
+                    <t t-if="widget.isImage">
+                        <img t-att-src="widget.receiptUrl"
+                             class="receipt-preview-image"
+                             alt="Receipt Preview"/>
+                    </t>
+                    <t t-if="!widget.isImage">
+                        <div class="file-preview">
+                            <div class="file-icon">📄</div>
+                            <div class="file-name" t-esc="widget.receiptFilename"/>
+                        </div>
+                    </t>
+                    <div class="receipt-actions mt-2">
+                        <button class="btn btn-sm btn-outline-primary">View</button>
+                        <button class="btn btn-sm btn-outline-danger">Remove</button>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <!-- Budget Progress in Expense Form -->
+    <t t-name="ExpenseBudgetProgress">
+        <div class="budget-progress-container" t-att-style="widget.hasBudget ? '' : 'display: none;'">
+            <div class="budget-progress-header">
+                <h4 class="budget-progress-title">
+                    <t t-if="widget.budgetName" t-esc="'Budget: ' + widget.budgetName"/>
+                    <t t-if="!widget.budgetName">Budget Information</t>
+                </h4>
+                <span t-attf-class="budget-progress-percentage {{ widget.utilization >= 95 ? 'text-danger' : widget.utilization >= 80 ? 'text-warning' : 'text-success' }}">
+                    <t t-esc="widget.utilization.toFixed(1) + '%'"/>
+                </span>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-background">
+                    <div t-attf-class="progress-bar-fill {{ widget.utilization >= 95 ? 'critical' : widget.utilization >= 80 ? 'warning' : 'normal' }}"
+                         t-attf-style="width: {{ Math.min(widget.utilization, 100) }}%;">
+                        <div class="progress-bar-text" t-esc="widget.utilization.toFixed(1) + '%'"/>
+                    </div>
+                </div>
+            </div>
+
+            <div class="budget-details mt-3">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="budget-detail">
+                            <div class="detail-label">Total Budget</div>
+                            <div class="detail-value" t-esc="widget._formatCurrency(widget.budgetAmount)"/>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="budget-detail">
+                            <div class="detail-label">Spent</div>
+                            <div class="detail-value" t-esc="widget._formatCurrency(widget.spentAmount)"/>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="budget-detail">
+                            <div class="detail-label">Remaining</div>
+                            <div class="detail-value"
+                                 t-attf-class="{{ widget.remainingAmount < 0 ? 'text-danger' : '' }}">
+                                <t t-esc="widget._formatCurrency(widget.remainingAmount)"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <t t-if="widget.showWarning">
+                <div t-attf-class="alert alert-{{ widget.warningLevel }} mt-3">
+                    <i class="fa fa-exclamation-triangle mr-2"></i>
+                    <span t-esc="widget.warningMessage"/>
+                </div>
+            </t>
+        </div>
+    </t>
+
+    <!-- Expense List Item Template -->
+    <t t-name="ExpenseListItem">
+        <div class="expense-list-item" t-att-data-expense-id="widget.expense.id">
+            <div class="expense-main-info">
+                <div class="expense-title" t-esc="widget.expense.title"/>
+                <div class="expense-meta">
+                    <span class="category-badge" t-att-data-category-id="widget.expense.category_id[0]">
+                        <span t-attf-class="category-color-dot"
+                              t-att-style="'background-color: ' + widget.expense.category_color + ';'"></span>
+                        <span t-esc="widget.expense.category_id[1]"/>
+                    </span>
+                    <span class="expense-date" t-esc="widget.formatDate(widget.expense.date)"/>
+                    <span t-attf-class="tree-status-badge tree-status-badge-{{ widget.expense.state }}">
+                        <t t-esc="widget.expense.state.charAt(0).toUpperCase() + widget.expense.state.slice(1)"/>
+                    </span>
+                </div>
+            </div>
+
+            <div class="expense-amount-info">
+                <div class="amount-cell" t-esc="widget._formatCurrency(widget.expense.amount)"/>
+                <div class="expense-user" t-esc="widget.expense.user_id[1]"/>
+            </div>
+
+            <div class="expense-actions">
+                <button class="tree-action-btn edit" title="Edit">
+                    <i class="fa fa-edit"></i>
+                </button>
+                <button class="tree-action-btn view" title="View">
+                    <i class="fa fa-eye"></i>
+                </button>
+                <button class="tree-action-btn delete" title="Delete">
+                    <i class="fa fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Expense Kanban Card -->
+    <t t-name="ExpenseKanbanCard">
+        <div t-attf-class="expense-kanban-card {{ widget.expense.state }}">
+            <div class="kanban-card-header">
+                <div class="expense-title" t-esc="widget.expense.title"/>
+                <div t-attf-class="status-badge status-badge-{{ widget.expense.state }}">
+                    <t t-esc="widget.expense.state.charAt(0).toUpperCase() + widget.expense.state.slice(1)"/>
+                </div>
+            </div>
+
+            <div class="kanban-card-body">
+                <div class="expense-amount" t-esc="widget._formatCurrency(widget.expense.amount)"/>
+                <div class="expense-category">
+                    <span t-attf-class="category-color-dot"
+                          t-att-style="'background-color: ' + widget.expense.category_color + ';'"></span>
+                    <span t-esc="widget.expense.category_id[1]"/>
+                </div>
+                <div class="expense-date" t-esc="widget.formatDate(widget.expense.date)"/>
+                <div class="expense-user" t-esc="widget.expense.user_id[1]"/>
+            </div>
+
+            <div class="kanban-card-footer">
+                <button class="btn btn-sm btn-outline-primary">View</button>
+                <button class="btn btn-sm btn-outline-secondary">Edit</button>
+            </div>
+        </div>
+    </t>
+
+    <!-- Expense Approval Workflow -->
+    <t t-name="ExpenseApprovalWorkflow">
+        <div class="approval-workflow">
+            <div class="workflow-steps">
+                <div t-attf-class="workflow-step {{ widget.expense.state === 'draft' ? 'active' : widget.expense.state !== 'draft' ? 'completed' : '' }}">
+                    <div class="step-icon">📝</div>
+                    <div class="step-label">Draft</div>
+                </div>
+                <div t-attf-class="workflow-step {{ widget.expense.state === 'submitted' ? 'active' : widget.expense.state === 'approved' || widget.expense.state === 'paid' ? 'completed' : '' }}">
+                    <div class="step-icon">⏳</div>
+                    <div class="step-label">Submitted</div>
+                </div>
+                <div t-attf-class="workflow-step {{ widget.expense.state === 'approved' ? 'active' : widget.expense.state === 'paid' ? 'completed' : '' }}">
+                    <div class="step-icon">✅</div>
+                    <div class="step-label">Approved</div>
+                </div>
+                <div t-attf-class="workflow-step {{ widget.expense.state === 'paid' ? 'active' : '' }}">
+                    <div class="step-icon">💰</div>
+                    <div class="step-label">Paid</div>
+                </div>
+            </div>
+
+            <div class="workflow-connectors">
+                <div t-attf-class="workflow-connector {{ widget.expense.state !== 'draft' ? 'completed' : '' }}"></div>
+                <div t-attf-class="workflow-connector {{ widget.expense.state === 'approved' || widget.expense.state === 'paid' ? 'completed' : '' }}"></div>
+                <div t-attf-class="workflow-connector {{ widget.expense.state === 'paid' ? 'completed' : '' }}"></div>
+            </div>
+        </div>
+    </t>
+
+</templates>

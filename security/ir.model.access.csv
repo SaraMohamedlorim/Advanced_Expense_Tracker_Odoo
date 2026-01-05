@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_expense_tracker_user,expense.tracker.user,model_expense_tracker,base.group_user,1,1,1,0
+access_expense_tracker_manager,expense.tracker.manager,model_expense_tracker,base.group_system,1,1,1,1
+access_expense_category_user,expense.category.user,model_expense_category,base.group_user,1,0,0,0
+access_expense_category_manager,expense.category.manager,model_expense_category,base.group_system,1,1,1,1
+access_expense_budget_user,expense.budget.user,model_expense_budget,base.group_user,1,1,1,1
+access_expense_budget_manager,expense.budget.manager,model_expense_budget,base.group_system,1,1,1,1
